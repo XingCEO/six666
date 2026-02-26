@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+output/
+*.csv
+!requirements.txt
+test_*.py
