@@ -1670,27 +1670,34 @@ class BattleHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data, ensure_ascii=False).encode('utf-8'))
 
 
-def start_server(port=8888):
+def start_server(port=None, host='0.0.0.0'):
+    """啟動 Web 伺服器
+    port: 埠號（預設讀取環境變數 PORT，否則 8888）
+    host: 綁定地址（雲端部署必須用 0.0.0.0）
+    """
+    if port is None:
+        port = int(os.environ.get('PORT', 8888))
+
     init_session()
 
     print()
     print("  ╔══════════════════════════════════════════════════════╗")
-    print("  ║         百家樂實戰系統 Pro v2.0 — Web 介面          ║")
+    print("  ║       百家樂實戰系統 Pro v3.0 — Web 介面            ║")
     print("  ╠══════════════════════════════════════════════════════╣")
-    print(f"  ║  🌐  http://localhost:{port}                         ║")
+    print(f"  ║  🌐  http://{host}:{port}                       ║")
     print("  ║  📱  手機同一區域網路亦可連線使用                    ║")
     print("  ║  ⌨   快捷鍵: 1=莊  2=閒  3=和  Z=撤回              ║")
     print("  ║  🎯  22 種預測策略 + 10 種注碼管理                   ║")
     print("  ║  🛣   五路路紙: 大路/大眼仔/小路/曱甴路/珠盤路      ║")
     print("  ║  按 Ctrl+C 停止伺服器                                ║")
     print("  ╚══════════════════════════════════════════════════════╝")
-    print()
+    print(flush=True)
 
     class ThreadedServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
         daemon_threads = True
 
-    with ThreadedServer(("", port), BattleHandler) as httpd:
+    with ThreadedServer((host, port), BattleHandler) as httpd:
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
@@ -1698,5 +1705,5 @@ def start_server(port=8888):
 
 
 if __name__ == "__main__":
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8888
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else None
     start_server(port)

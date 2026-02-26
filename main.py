@@ -71,6 +71,12 @@ def main():
     parser.add_argument('--port', type=int, default=8888, help='Web 介面埠號')
     args = parser.parse_args()
 
+    # === 無參數時預設啟動 Web 介面（適用雲端部署） ===
+    if len(sys.argv) == 1:
+        from web_app import start_server
+        start_server()
+        return
+
     # === Web 介面 ===
     if args.web:
         from web_app import start_server
